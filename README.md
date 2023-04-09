@@ -1,4 +1,4 @@
-# gzproxy - Simple Your Auth for Web Service
+# gzproxy - Simple Proxy Upstream
 
 gzproxy是一个用于服务访问控制的项目，支持多种认证方式，包括Basic Auth、BearToken、GitHub登录和飞书登录等。它可以使用Docker进行部署，并支持私有化部署。此外，gzproxy完全开源。
 

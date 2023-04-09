@@ -1,11 +1,11 @@
 package core
 
 import (
-	"github.com/go-zoox/core-utils/fmt"
-	"github.com/go-zoox/fetch"
-	"github.com/go-zoox/logger"
+	"fmt"
+
+	"github.com/go-zoox/gzproxy/core/auth"
 	"github.com/go-zoox/proxy"
-	"github.com/go-zoox/zoox"
+	"github.com/go-zoox/proxy/utils/rewriter"
 	"github.com/go-zoox/zoox/defaults"
 )
 
@@ -16,6 +16,10 @@ type Config struct {
 	// Upstream is the upstream service
 	// Example: http://httpbin:8080
 	Upstream string
+
+	// Prefix is the prefix
+	// Example: /v1
+	Prefix string
 
 	// BasicUsername is the basic username
 	BasicUsername string
@@ -35,63 +39,20 @@ type Config struct {
 func Serve(cfg *Config) error {
 	app := defaults.Application()
 
-	if cfg.AuthService != "" {
-		app.Use(func(ctx *zoox.Context) {
-			user, pass, ok := ctx.Request.BasicAuth()
-			if !ok {
-				ctx.Set("WWW-Authenticate", `Basic realm="go-zoox"`)
-				ctx.Status(401)
-				return
-			}
+	auth.ApplyServiceAuth(app, cfg.AuthService)
+	auth.ApplyBasicAuth(app, cfg.BasicUsername, cfg.BasicPassword)
 
-			response, err := fetch.Post(cfg.AuthService, &fetch.Config{
-				Headers: fetch.Headers{
-					"Content-Type": "application/json",
+	app.Proxy(".*", cfg.Upstream, func(sc *proxy.SingleTargetConfig) {
+		sc.ChangeOrigin = true
+
+		if cfg.Prefix != "" {
+			sc.Rewrites = rewriter.Rewriters{
+				{
+					From: fmt.Sprintf("%s/(.*)", cfg.Prefix),
+					To:   "/$1",
 				},
-				Body: map[string]string{
-					"from":     "go-zoox/gzproxy.basic",
-					"username": user,
-					"password": pass,
-				},
-			})
-			if err != nil {
-				logger.Errorf("basic auth with auth-service error: %s", err)
-				fmt.PrintJSON(map[string]any{
-					"request":  response.Request,
-					"response": response.String(),
-				})
-
-				ctx.String(500, "internal server error")
-				return
 			}
-
-			if response.Status != 200 {
-				ctx.String(400, "invalid username and password: %s", response.String())
-				return
-			}
-
-			ctx.Next()
-		})
-	} else if cfg.BasicUsername != "" && cfg.BasicPassword != "" {
-		app.Use(func(ctx *zoox.Context) {
-			user, pass, ok := ctx.Request.BasicAuth()
-			if !ok {
-				ctx.Set("WWW-Authenticate", `Basic realm="go-zoox"`)
-				ctx.Status(401)
-				return
-			}
-
-			if !(user == cfg.BasicUsername && pass == cfg.BasicPassword) {
-				ctx.Status(401)
-				return
-			}
-
-			ctx.Next()
-		})
-	}
-
-	app.Proxy("(.*)", cfg.Upstream, &proxy.SingleTargetConfig{
-		ChangeOrigin: true,
+		}
 	})
 
 	return app.Run()

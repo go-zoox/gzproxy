@@ -8,7 +8,7 @@ require (
 	github.com/go-zoox/fetch v1.7.6
 	github.com/go-zoox/logger v1.4.4
 	github.com/go-zoox/proxy v1.4.0
-	github.com/go-zoox/zoox v1.9.3
+	github.com/go-zoox/zoox v1.9.4
 )
 
 require (

@@ -8,7 +8,7 @@ import (
 func main() {
 	app := cli.NewSingleProgram(&cli.SingleProgramConfig{
 		Name:    "gzproxy",
-		Usage:   "gzproxy is a portable auth cli",
+		Usage:   "gzproxy is a portable proxy cli",
 		Version: Version,
 		Flags: []cli.Flag{
 			&cli.IntFlag{
@@ -22,6 +22,12 @@ func main() {
 				Name:     "upstream",
 				Usage:    "upstream service",
 				EnvVars:  []string{"UPSTREAM"},
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "prefix",
+				Usage:    "the prefix",
+				EnvVars:  []string{"PREFIX"},
 				Required: true,
 			},
 			&cli.StringFlag{
@@ -49,10 +55,11 @@ func main() {
 
 		return core.Serve(&core.Config{
 			Port:          ctx.Int64("port"),
+			Upstream:      ctx.String("upstream"),
+			Prefix:        ctx.String("prefix"),
 			BasicUsername: basicUsername,
 			BasicPassword: basicUpassword,
 			AuthService:   authService,
-			Upstream:      ctx.String("upstream"),
 		})
 	})
 

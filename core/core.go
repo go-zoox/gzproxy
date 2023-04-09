@@ -26,6 +26,9 @@ type Config struct {
 	// BasicPassword is the basic password
 	BasicPassword string
 
+	// BearerToken is the bearer token
+	BearerToken string
+
 	// mode: dynamic service with username and password
 
 	// AuthService is auth service url
@@ -34,13 +37,21 @@ type Config struct {
 	//	      Header => Content-Type: application/json
 	//				Body => { "username": "username", "password": "password" }
 	AuthService string
+
+	// oauth2
+	Oauth2Provider     string
+	Oauth2ClientID     string
+	Oauth2ClientSecret string
+	Oauth2RedirectURI  string
 }
 
 func Serve(cfg *Config) error {
 	app := defaults.Application()
 
-	auth.ApplyServiceAuth(app, cfg.AuthService)
 	auth.ApplyBasicAuth(app, cfg.BasicUsername, cfg.BasicPassword)
+	auth.ApplyBearerToken(app, cfg.BearerToken)
+	auth.ApplyAuthService(app, cfg.AuthService)
+	auth.ApplyOauth2(app, cfg.Oauth2Provider, cfg.Oauth2ClientID, cfg.Oauth2ClientSecret, cfg.Oauth2RedirectURI)
 
 	app.Proxy(".*", cfg.Upstream, func(sc *proxy.SingleTargetConfig) {
 		sc.ChangeOrigin = true

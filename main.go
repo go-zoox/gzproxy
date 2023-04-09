@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/go-zoox/cli"
 	"github.com/go-zoox/gzproxy/core"
 )
@@ -25,11 +27,11 @@ func main() {
 				Required: true,
 			},
 			&cli.StringFlag{
-				Name:     "prefix",
-				Usage:    "the prefix",
-				EnvVars:  []string{"PREFIX"},
-				Required: true,
+				Name:    "prefix",
+				Usage:   "the prefix",
+				EnvVars: []string{"PREFIX"},
 			},
+			// basic auth
 			&cli.StringFlag{
 				Name:    "basic-username",
 				Usage:   "basic username",
@@ -40,26 +42,65 @@ func main() {
 				Usage:   "basic password",
 				EnvVars: []string{"BASIC_PASSWORD"},
 			},
+			// bearer token
+			&cli.StringFlag{
+				Name:    "bearer-token",
+				Usage:   "bearer token",
+				EnvVars: []string{"BEARER_TOKEN"},
+			},
+			// auth service
 			&cli.StringFlag{
 				Name:    "auth-service",
 				Usage:   "auth service",
 				EnvVars: []string{"AUTH_SERVICE"},
 			},
+			// oauth2
+			&cli.StringFlag{
+				Name:    "oauth2-provider",
+				Usage:   "oauth2 provider, support: doreamon, github, feishu",
+				EnvVars: []string{"OAUTH2_PROVIDER"},
+			},
+			&cli.StringFlag{
+				Name:    "oauth2-client-id",
+				Usage:   "oauth2 client id",
+				EnvVars: []string{"OAUTH2_CLIENT_ID"},
+			},
+			&cli.StringFlag{
+				Name:    "oauth2-client-secret",
+				Usage:   "oauth2 client secret",
+				EnvVars: []string{"OAUTH2_CLIENT_SECRET"},
+			},
+			&cli.StringFlag{
+				Name:    "oauth2-redirect-uri",
+				Usage:   "oauth2 redirect uri",
+				EnvVars: []string{"OAUTH2_REDIRECT_URI"},
+			},
 		},
 	})
 
 	app.Command(func(ctx *cli.Context) error {
-		basicUsername := ctx.String("basic-username")
-		basicUpassword := ctx.String("basic-password")
-		authService := ctx.String("auth-service")
+		oauth2Provider := ctx.String("oauth2-provider")
+		oauth2RedirectURI := ctx.String("oauth2-redirect-uri")
+		if oauth2RedirectURI == "" {
+			oauth2RedirectURI = fmt.Sprintf("http://127.0.0.1:%s/login/%s/callback", ctx.String("port"), oauth2Provider)
+		}
 
 		return core.Serve(&core.Config{
-			Port:          ctx.Int64("port"),
-			Upstream:      ctx.String("upstream"),
-			Prefix:        ctx.String("prefix"),
-			BasicUsername: basicUsername,
-			BasicPassword: basicUpassword,
-			AuthService:   authService,
+			Port:     ctx.Int64("port"),
+			Upstream: ctx.String("upstream"),
+			Prefix:   ctx.String("prefix"),
+			//
+			BasicUsername: ctx.String("basic-username"),
+			BasicPassword: ctx.String("basic-password"),
+			//
+			BearerToken: ctx.String("bearer-token"),
+			//
+			AuthService: ctx.String("auth-service"),
+			//
+			Oauth2Provider:     oauth2Provider,
+			Oauth2ClientID:     ctx.String("oauth2-client-id"),
+			Oauth2ClientSecret: ctx.String("oauth2-client-secret"),
+			Oauth2RedirectURI:  oauth2RedirectURI,
 		})
 	})
 

@@ -7,7 +7,9 @@ require (
 	github.com/go-zoox/core-utils v1.2.7
 	github.com/go-zoox/fetch v1.7.6
 	github.com/go-zoox/logger v1.4.4
+	github.com/go-zoox/oauth2 v1.5.6
 	github.com/go-zoox/proxy v1.4.0
+	github.com/go-zoox/random v1.0.3
 	github.com/go-zoox/zoox v1.9.4
 )
 
@@ -35,7 +37,6 @@ require (
 	github.com/go-zoox/jobqueue v1.0.0 // indirect
 	github.com/go-zoox/jwt v1.2.0 // indirect
 	github.com/go-zoox/kv v1.5.1 // indirect
-	github.com/go-zoox/random v1.0.3 // indirect
 	github.com/go-zoox/ratelimit v1.2.0 // indirect
 	github.com/go-zoox/safe v1.0.1 // indirect
 	github.com/go-zoox/session v1.0.6 // indirect

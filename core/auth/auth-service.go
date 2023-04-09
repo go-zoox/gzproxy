@@ -7,7 +7,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
-func ApplyServiceAuth(app *zoox.Application, authService string) {
+func ApplyAuthService(app *zoox.Application, authService string) {
 	if authService == "" {
 		return
 	}

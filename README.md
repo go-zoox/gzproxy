@@ -1,13 +1,15 @@
 # gzproxy - Simple Proxy Upstream
 
-gzproxy是一个用于服务访问控制的项目，支持多种认证方式，包括Basic Auth、BearToken、GitHub登录和飞书登录等。它可以使用Docker进行部署，并支持私有化部署。此外，gzproxy完全开源。
+gzproxy是一个用于服务代理的项目，支持多种认证方式，包括Basic Auth、BearToken、GitHub登录和飞书登录等。它可以使用Docker进行部署，并支持私有化部署。此外，gzproxy完全开源。
 
 ## 特性
 
 - [x] 支持 Basic Auth 认证
 - [x] 支持 BearToken 认证
-- [x] 支持 GitHub 登录
-- [x] 支持飞书登录
+- [x] 支持 Oauth2 认证
+  - [x] 支持 Doreamon 登录
+  - [x] 支持 GitHub 登录
+  - [x] 支持飞书登录
 - [x] 使用Docker容器化部署
 - [x] 支持私有化部署
 
@@ -26,11 +28,9 @@ services:
     ports:
       - 8080:8080
     environment:
-      # basic auth
-      AUTH_TYPE: basicauth
-      USERNAME: <YOUR_USERNAME>
-      PASSWORD: <YOUR_PASSWORD>
       UPSTREAM: https://httpbin.org
+      BASIC_USERNAME: <YOUR_USERNAME>
+      BASIC_PASSWORD: <YOUR_PASSWORD>
 ```
 
 替换上述环境变量的值为您自己的值。
@@ -51,7 +51,7 @@ $ curl -o- https://raw.githubusercontent.com/zcorky/zmicro/master/install | bash
 $ zmicro package install gzproxy
 
 # 运行
-$ zmicro gzproxy basicauth --username <YOUR_USERNAME> --password <YOUR_PASSWORD> --upstream <YOUR_WEBSERVICE>
+$ zmicro gzproxy --upstream <YOUR_WEBSERVICE> --basic-username <YOUR_USERNAME> --basic-password <YOUR_PASSWORD>
 ```
 
 
@@ -67,9 +67,8 @@ services:
     ports:
       - 8080:8080
     environment:
-      AUTH_TYPE: bearertoken
-      TOKEN: <YOUR_TOKEN>
       UPSTREAM: https://httpbin.org
+      BEARER_TOKEN: <YOUR_TOKEN>
 ```
 
 * 2. 使用 `GitHub 登录`
@@ -83,11 +82,11 @@ services:
     ports:
       - 8080:8080
     environment:
-      AUTH_TYPE: github
-      CLIENT_ID: <GITHUB_OAUTH2_CLIENT_ID>
-      CLIENT_SECRET: <GITHUB_OAUTH2_CLIENT_SECRET>
-      REDIRECT_URI: <GITHUB_OAUTH2_REDIRECT_URI>
       UPSTREAM: https://httpbin.org
+      OAUTH2_PROVIDER: github
+      OAUTH2_CLIENT_ID: <GITHUB_OAUTH2_CLIENT_ID>
+      OAUTH2_CLIENT_SECRET: <GITHUB_OAUTH2_CLIENT_SECRET>
+      OAUTH2_REDIRECT_URI: <GITHUB_OAUTH2_REDIRECT_URI>
 ```
 
 * 2. 使用 `飞书登录`
@@ -101,11 +100,11 @@ services:
     ports:
       - 8080:8080
     environment:
-      AUTH_TYPE: feishu
-      CLIENT_ID: <FEISHU_OAUTH2_CLIENT_ID>
-      CLIENT_SECRET: <FEISHU_OAUTH2_CLIENT_SECRET>
-      REDIRECT_URI: <FEISHU_OAUTH2_REDIRECT_URI>
-      UPSTREAM: https://httpbin.org
+     UPSTREAM: https://httpbin.org
+      OAUTH2_PROVIDER: feishu
+      OAUTH2_CLIENT_ID: <FEISHU_OAUTH2_CLIENT_ID>
+      OAUTH2_CLIENT_SECRET: <FEISHU_OAUTH2_CLIENT_SECRET>
+      OAUTH2_REDIRECT_URI: <FEISHU_OAUTH2_REDIRECT_URI>
 ```
 
 ## 使用

@@ -31,6 +31,11 @@ func main() {
 				Usage:   "the prefix",
 				EnvVars: []string{"PREFIX"},
 			},
+			&cli.BoolFlag{
+				Name:    "disable-change-origin",
+				Usage:   "disable change origin, default is false",
+				EnvVars: []string{"DISABLE_CHANGE_ORIGIN"},
+			},
 			// basic auth
 			&cli.StringFlag{
 				Name:    "basic-username",
@@ -86,9 +91,10 @@ func main() {
 		}
 
 		return core.Serve(&core.Config{
-			Port:     ctx.Int64("port"),
-			Upstream: ctx.String("upstream"),
-			Prefix:   ctx.String("prefix"),
+			Port:                ctx.Int64("port"),
+			Upstream:            ctx.String("upstream"),
+			Prefix:              ctx.String("prefix"),
+			DisableChangeOrigin: ctx.Bool("disable-change-origin"),
 			//
 			BasicUsername: ctx.String("basic-username"),
 			BasicPassword: ctx.String("basic-password"),

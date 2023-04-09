@@ -21,6 +21,9 @@ type Config struct {
 	// Example: /v1
 	Prefix string
 
+	// DisableChangeOrigin is disable change origin
+	DisableChangeOrigin bool
+
 	// BasicUsername is the basic username
 	BasicUsername string
 	// BasicPassword is the basic password
@@ -54,7 +57,9 @@ func Serve(cfg *Config) error {
 	auth.ApplyOauth2(app, cfg.Oauth2Provider, cfg.Oauth2ClientID, cfg.Oauth2ClientSecret, cfg.Oauth2RedirectURI)
 
 	app.Proxy(".*", cfg.Upstream, func(sc *proxy.SingleTargetConfig) {
-		sc.ChangeOrigin = true
+		if !cfg.DisableChangeOrigin {
+			sc.ChangeOrigin = true
+		}
 
 		if cfg.Prefix != "" {
 			sc.Rewrites = rewriter.Rewriters{

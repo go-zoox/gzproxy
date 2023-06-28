@@ -71,5 +71,5 @@ func Serve(cfg *Config) error {
 		}
 	})
 
-	return app.Run()
+	return app.Run(fmt.Sprintf(":%d", cfg.Port))
 }

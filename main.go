@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-zoox/cli"
+	"github.com/go-zoox/core-utils/strings"
 	"github.com/go-zoox/gzproxy/core"
 )
 
@@ -80,6 +82,18 @@ func main() {
 				Usage:   "oauth2 redirect uri",
 				EnvVars: []string{"OAUTH2_REDIRECT_URI"},
 			},
+			//
+			&cli.StringFlag{
+				Name:    "api",
+				Usage:   "specify the api backend, which will use /api as prefix",
+				EnvVars: []string{"API"},
+			},
+			//
+			&cli.StringSliceFlag{
+				Name:    "header",
+				Usage:   "specify the header, which will be added to the request",
+				EnvVars: []string{"HEADERS"},
+			},
 		},
 	})
 
@@ -88,6 +102,28 @@ func main() {
 		oauth2RedirectURI := ctx.String("oauth2-redirect-uri")
 		if oauth2RedirectURI == "" {
 			oauth2RedirectURI = fmt.Sprintf("http://127.0.0.1:%s/login/%s/callback", ctx.String("port"), oauth2Provider)
+		}
+
+		var headers http.Header
+		if ctx.StringSlice("header") != nil {
+			for _, header := range ctx.StringSlice("header") {
+				headers = http.Header{}
+
+				var kv []string
+				if strings.Contains(header, "=") {
+					kv = strings.SplitN(header, "=", 2)
+				} else if strings.Contains(header, ":") {
+					kv = strings.SplitN(header, ":", 2)
+				} else {
+					kv = []string{header}
+				}
+
+				if len(kv) == 2 {
+					headers.Set(kv[0], kv[1])
+				} else {
+					headers.Set(kv[0], "")
+				}
+			}
 		}
 
 		return core.Serve(&core.Config{
@@ -107,6 +143,10 @@ func main() {
 			Oauth2ClientID:     ctx.String("oauth2-client-id"),
 			Oauth2ClientSecret: ctx.String("oauth2-client-secret"),
 			Oauth2RedirectURI:  oauth2RedirectURI,
+			//
+			API: ctx.String("api"),
+			//
+			Headers: headers,
 		})
 	})
 

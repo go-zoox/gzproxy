@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-zoox/gzproxy/core/auth"
 	"github.com/go-zoox/proxy"
@@ -46,6 +47,12 @@ type Config struct {
 	Oauth2ClientID     string
 	Oauth2ClientSecret string
 	Oauth2RedirectURI  string
+
+	// api backend
+	API string
+
+	// proxy headers
+	Headers http.Header
 }
 
 func Serve(cfg *Config) error {
@@ -55,6 +62,23 @@ func Serve(cfg *Config) error {
 	auth.ApplyBearerToken(app, cfg.BearerToken)
 	auth.ApplyAuthService(app, cfg.AuthService)
 	auth.ApplyOauth2(app, cfg.Oauth2Provider, cfg.Oauth2ClientID, cfg.Oauth2ClientSecret, cfg.Oauth2RedirectURI)
+
+	if cfg.API != "" {
+		app.Proxy("/api", cfg.API, func(sc *proxy.SingleTargetConfig) {
+			if !cfg.DisableChangeOrigin {
+				sc.ChangeOrigin = true
+			}
+
+			sc.Rewrites = rewriter.Rewriters{
+				{
+					From: "/api/(.*)",
+					To:   "/$1",
+				},
+			}
+
+			sc.RequestHeaders = cfg.Headers
+		})
+	}
 
 	app.Proxy(".*", cfg.Upstream, func(sc *proxy.SingleTargetConfig) {
 		if !cfg.DisableChangeOrigin {

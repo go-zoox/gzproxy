@@ -93,6 +93,8 @@ func Serve(cfg *Config) error {
 				},
 			}
 		}
+
+		sc.RequestHeaders = cfg.Headers
 	})
 
 	return app.Run(fmt.Sprintf(":%d", cfg.Port))

@@ -47,6 +47,8 @@ type Config struct {
 	Oauth2ClientID     string
 	Oauth2ClientSecret string
 	Oauth2RedirectURI  string
+	Oauth2Scope        string
+	Oauth2BaseURL      string
 
 	// api backend
 	API string
@@ -61,7 +63,7 @@ func Serve(cfg *Config) error {
 	auth.ApplyBasicAuth(app, cfg.BasicUsername, cfg.BasicPassword)
 	auth.ApplyBearerToken(app, cfg.BearerToken)
 	auth.ApplyAuthService(app, cfg.AuthService)
-	auth.ApplyOauth2(app, cfg.Oauth2Provider, cfg.Oauth2ClientID, cfg.Oauth2ClientSecret, cfg.Oauth2RedirectURI)
+	auth.ApplyOauth2(app, cfg.Oauth2Provider, cfg.Oauth2ClientID, cfg.Oauth2ClientSecret, cfg.Oauth2RedirectURI, cfg.Oauth2Scope, cfg.Oauth2BaseURL)
 
 	if cfg.API != "" {
 		app.Proxy("/api", cfg.API, func(sc *proxy.SingleTargetConfig) {

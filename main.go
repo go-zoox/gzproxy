@@ -64,7 +64,7 @@ func main() {
 			// oauth2
 			&cli.StringFlag{
 				Name:    "oauth2-provider",
-				Usage:   "oauth2 provider, support: doreamon, github, feishu",
+				Usage:   "oauth2 provider, support: doreamon, github, feishu, slack, google, microsoft, auth0, okta",
 				EnvVars: []string{"OAUTH2_PROVIDER"},
 			},
 			&cli.StringFlag{
@@ -81,6 +81,16 @@ func main() {
 				Name:    "oauth2-redirect-uri",
 				Usage:   "oauth2 redirect uri",
 				EnvVars: []string{"OAUTH2_REDIRECT_URI"},
+			},
+			&cli.StringFlag{
+				Name:    "oauth2-scope",
+				Usage:   "oauth2 scope",
+				EnvVars: []string{"OAUTH2_SCOPE"},
+			},
+			&cli.StringFlag{
+				Name:    "oauth2-base-url",
+				Usage:   "oauth2 base url",
+				EnvVars: []string{"OAUTH2_BASE_URL"},
 			},
 			//
 			&cli.StringFlag{
@@ -143,6 +153,8 @@ func main() {
 			Oauth2ClientID:     ctx.String("oauth2-client-id"),
 			Oauth2ClientSecret: ctx.String("oauth2-client-secret"),
 			Oauth2RedirectURI:  oauth2RedirectURI,
+			Oauth2Scope:        ctx.String("oauth2-scope"),
+			Oauth2BaseURL:      ctx.String("oauth2-base-url"),
 			//
 			API: ctx.String("api"),
 			//

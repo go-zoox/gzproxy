@@ -13,7 +13,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
-func ApplyOauth2(app *zoox.Application, provider, clientID, clientSecret, redirectURI string) {
+func ApplyOauth2(app *zoox.Application, provider, clientID, clientSecret, redirectURI, scope, baseURL string) {
 	if provider == "" || clientID == "" || clientSecret == "" || redirectURI == "" {
 		return
 	}
@@ -22,6 +22,8 @@ func ApplyOauth2(app *zoox.Application, provider, clientID, clientSecret, redire
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		RedirectURI:  redirectURI,
+		Scope:        scope,
+		BaseURL:      baseURL,
 	})
 	if err != nil {
 		panic(fmt.Errorf("failed to create oauth2 client(provider: %s): %v", provider, err))
@@ -79,6 +81,10 @@ func ApplyOauth2(app *zoox.Application, provider, clientID, clientSecret, redire
 			}
 
 			client.Callback(code, state, func(user *oauth2.User, token *oauth2.Token, err error) {
+				if err != nil {
+					panic(fmt.Errorf("failed to callback: %s", err))
+				}
+
 				userSessionKey := fmt.Sprintf("user:%s", user.ID)
 
 				ctx.Cache().Set(userSessionKey, user, ctx.App.SessionMaxAge)

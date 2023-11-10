@@ -82,7 +82,7 @@ func Serve(cfg *Config) error {
 		})
 	}
 
-	app.Proxy(".*", cfg.Upstream, func(sc *zoox.ProxyConfig) {
+	app.Proxy("/", cfg.Upstream, func(sc *zoox.ProxyConfig) {
 		if !cfg.DisableChangeOrigin {
 			sc.ChangeOrigin = true
 		}

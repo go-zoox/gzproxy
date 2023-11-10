@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-zoox/gzproxy/core/auth"
-	"github.com/go-zoox/proxy"
 	"github.com/go-zoox/proxy/utils/rewriter"
+	"github.com/go-zoox/zoox"
 	"github.com/go-zoox/zoox/defaults"
 )
 
@@ -66,7 +66,7 @@ func Serve(cfg *Config) error {
 	auth.ApplyOauth2(app, cfg.Oauth2Provider, cfg.Oauth2ClientID, cfg.Oauth2ClientSecret, cfg.Oauth2RedirectURI, cfg.Oauth2Scope, cfg.Oauth2BaseURL)
 
 	if cfg.API != "" {
-		app.Proxy("/api", cfg.API, func(sc *proxy.SingleTargetConfig) {
+		app.Proxy("/api", cfg.API, func(sc *zoox.ProxyConfig) {
 			if !cfg.DisableChangeOrigin {
 				sc.ChangeOrigin = true
 			}
@@ -82,7 +82,7 @@ func Serve(cfg *Config) error {
 		})
 	}
 
-	app.Proxy(".*", cfg.Upstream, func(sc *proxy.SingleTargetConfig) {
+	app.Proxy(".*", cfg.Upstream, func(sc *zoox.ProxyConfig) {
 		if !cfg.DisableChangeOrigin {
 			sc.ChangeOrigin = true
 		}

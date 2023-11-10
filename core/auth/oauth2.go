@@ -87,7 +87,7 @@ func ApplyOauth2(app *zoox.Application, provider, clientID, clientSecret, redire
 
 				userSessionKey := fmt.Sprintf("user:%s", user.ID)
 
-				ctx.Cache().Set(userSessionKey, user, ctx.App.SessionMaxAge)
+				ctx.Cache().Set(userSessionKey, user, ctx.App.Config.Session.MaxAge)
 
 				ctx.Session().Set("oauth2.user", userSessionKey)
 				// ctx.Session().Set("oauth2.token", token.AccessToken)

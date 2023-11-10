@@ -1,5 +1,5 @@
 # Builder
-FROM whatwewant/builder-go:v1.19-1 as builder
+FROM whatwewant/builder-go:v1.20-1 as builder
 
 WORKDIR /build
 
@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 \
   -v -o gzproxy
 
 # Server
-FROM whatwewant/go:v1.19-1
+FROM whatwewant/go:v1.20-1
 
 LABEL MAINTAINER="Zero<tobewhatwewant@gmail.com>"
 

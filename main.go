@@ -116,22 +116,23 @@ func main() {
 
 		var headers http.Header
 		if ctx.StringSlice("header") != nil {
+			headers = http.Header{}
+
 			for _, header := range ctx.StringSlice("header") {
-				headers = http.Header{}
 
 				var kv []string
-				if strings.Contains(header, "=") {
-					kv = strings.SplitN(header, "=", 2)
-				} else if strings.Contains(header, ":") {
+				if strings.Contains(header, ":") {
 					kv = strings.SplitN(header, ":", 2)
+				} else if strings.Contains(header, "=") {
+					kv = strings.SplitN(header, "=", 2)
 				} else {
 					kv = []string{header}
 				}
 
 				if len(kv) == 2 {
-					headers.Set(kv[0], kv[1])
+					headers.Set(strings.TrimSpace(kv[0]), strings.TrimSpace(kv[1]))
 				} else {
-					headers.Set(kv[0], "")
+					headers.Set(strings.TrimSpace(kv[0]), "")
 				}
 			}
 		}
